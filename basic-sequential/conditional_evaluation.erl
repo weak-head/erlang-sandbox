@@ -1,6 +1,12 @@
 -module(conditional_evaluation).
 -import(math, [sqrt/1, pi/0]).
--export([area/1, listlen/1, index/1, index/2, area_case/1]).
+-export([area/1
+        ,listlen/1
+        ,index/1
+        ,index/2
+        ,area_case/1
+        ,sum/1
+        ,adjust/1]).
 
 % -----
 % Conditional 1 -> Pattern matching.
@@ -38,3 +44,17 @@ area_case(Z) ->
             sqrt(S*(S-A)*(S-B)*(S-C));
         {circle, R} -> pi() * R * R()
     end.
+
+sum(L) ->
+    case L of
+        [0|Xs] -> sum(Xs);
+        [X|Xs] -> X + sum(Xs);
+        [] -> 0
+    end.
+
+adjust(X) ->
+    Y = case X rem 2 of
+        0 -> 42;
+        1 -> 24
+        end,
+    X+Y.
