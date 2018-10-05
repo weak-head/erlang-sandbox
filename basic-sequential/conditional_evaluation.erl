@@ -7,7 +7,9 @@
         ,area_case/1
         ,sum/1
         ,adjust/1
-        ,weird_foo/2]).
+        ,weird_foo/2
+        ,even/1
+        ,number/1]).
 
 % -----
 % Conditional 1 -> Pattern matching.
@@ -69,3 +71,13 @@ weird_foo(X,Y) ->
         X <  Y -> 91
         end,
     Z+X+Y.
+
+% -- -- --
+% Guards:
+
+even(Int) when Int rem 2 == 0 -> true;
+even(Int) when Int rem 2 == 1 -> false.
+
+number(Num) when is_float(Num)   -> float;
+number(Num) when is_integer(Num) -> integer;
+number(_Other)                   -> false.
