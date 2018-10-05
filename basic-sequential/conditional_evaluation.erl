@@ -6,7 +6,8 @@
         ,index/2
         ,area_case/1
         ,sum/1
-        ,adjust/1]).
+        ,adjust/1
+        ,weird_foo/2]).
 
 % -----
 % Conditional 1 -> Pattern matching.
@@ -58,3 +59,13 @@ adjust(X) ->
         1 -> 24
         end,
     X+Y.
+
+% Conditional 3 -> If expression.
+weird_foo(X,Y) ->
+    Z = if
+        X >  Y -> 14;
+        X == 3 -> 28;
+        Y =< 7 -> 44;
+        X <  Y -> 91
+        end,
+    Z+X+Y.
