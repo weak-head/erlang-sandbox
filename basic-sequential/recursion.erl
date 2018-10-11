@@ -3,7 +3,9 @@
         , average/1
         , sum/1
         , len/1
-        , better_average/1]).
+        , better_average/1
+        , even/1
+        , member/2]).
 
 % -------------------------
 % bumping list of integers.
@@ -27,3 +29,15 @@ better_average(Lst) ->
 
 foldl_average([], S, L)    -> {S, L};
 foldl_average([H|T], S, L) -> foldl_average(T, S+H, L+1).
+
+% -------------------------
+% we are not using HOF here,
+% though this is a good place for it
+% anyways here is our `even` filter
+even([]) -> [];
+even([H|T]) when H rem 2 == 0 -> [H|even(T)];
+even([_|T]) -> even(T).
+
+member(_, [])    -> false;
+member(H, [H|_]) -> true;
+member(H, [_|T]) -> member(H, T).
