@@ -1,5 +1,5 @@
 -module(handling_errors).
--export([test/1, return_error/1, try_return/1]).
+-export([test/1, return_error/1, try_return/1, try_wildcard/1, try_shadow/1]).
 
 
 % 43
@@ -62,4 +62,30 @@ try_return(X) when is_integer(X) ->
         exit:Reason -> {exit, Reason};
         throw:Throw -> {throw, Throw};
         error:Error -> {error, Error}
+    end.
+
+% as an example of try catch
+% try_wildcard(-1).
+% try_wildcard(0).
+% try_wildcard(1).
+try_wildcard(X) when is_integer(X) ->
+    try return_error(X)
+        catch
+        throw:Throw -> {throw, Throw};
+        error:_     -> error;
+        Type:Error  -> {Type, Error};
+        _           -> other;
+        _:_         -> other
+    end.
+
+% try_shadow(-1).
+% try_shadow(0).
+% try_shadow(1).
+try_shadow(X) when is_integer(X) ->
+    try return_error(X) of
+        Val -> {normal, Val}
+        catch
+        exit:_  -> 34;
+        throw:_ -> 109;
+        error:_ -> 191
     end.
