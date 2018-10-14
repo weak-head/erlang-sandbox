@@ -1,5 +1,5 @@
 -module(handling_errors).
--export([test/1, return_error/1, try_return/1, try_wildcard/1, try_shadow/1]).
+-export([test/1, return_error/1, try_return/1, try_wildcard/1, try_shadow/1, return_catch/1]).
 
 
 % 43
@@ -44,6 +44,12 @@ return_error(X) when X < 0 ->
                                {shell,eval_loop,3}]}});
 return_error(X) when X == 0 ->
     1/X;
+return_error(X) when X == 42 ->
+    exit({badarith, [{exception, return_error, 1},
+                     {erl_eval, do_apply, 5},
+                     {shell, exprs, 6},
+                     {shell, eval_exprs, 6},
+                     {shell, eval_loop, 3}]});
 return_error(X) when X > 0 ->
     {'EXIT', {badarith, [{exception,return_error,1},
                          {erl_eval,do_apply,5},
@@ -89,3 +95,16 @@ try_shadow(X) when is_integer(X) ->
         throw:_ -> 109;
         error:_ -> 191
     end.
+
+
+% --------------------------------------
+% it's better to avoid `catch` expression:
+% we are going to have the identical result for
+% all these four calls:
+%
+% return_catch(0).
+% return_catch(-1).
+% return_catch(1).
+% return_catch(42).
+return_catch(X) when is_integer(X) ->
+    catch return_error(X).
