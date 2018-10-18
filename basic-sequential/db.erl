@@ -2,23 +2,34 @@
 -export([new/0, destroy/1, write/3, delete/2, read/2, match/2, example/0]).
 
 new() ->
-   throw(not_implemented).
+    [].
 
-destroy(Db) ->
-   throw(not_implemented).
+destroy(_Db) ->
+    {ok}.
 
 write(Key, Element, Db) ->
-   throw(not_implemented).
+    [{Key, Element}|Db].
 
-delete(Key, Db) ->
-   throw(not_implemented).
+delete(_, []) ->
+    [];
+delete(K, [{K,_}|Db]) ->
+    delete(K, Db);
+delete(Key, [{K,V}|Db]) ->
+    [{K,V}|delete(Key,Db)].
 
-read(Key,Db) ->
-   throw(not_implemented).
+read(_, []) ->
+    {error, instance};
+read(_K, [{_K,V}|_]) ->
+    {ok, V};
+read(Key, [{_K,_V}|Db]) ->
+    read(Key, Db).
 
-match(Element, Db) ->
-   throw(not_implemented).
-
+match(_, []) ->
+    [];
+match(E, [{K,E}|Db]) ->
+    [K|match(E,Db)];
+match(E, [{_K,_R}|Db]) ->
+    match(E, Db).
 
 example() ->
     Db  = new(),
