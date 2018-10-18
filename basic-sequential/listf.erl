@@ -1,5 +1,5 @@
 -module(listf).
--export([filter/2, reverse/1]).
+-export([filter/2, reverse/1, concatenate/1]).
 
 filter([], _)    -> [];
 filter([H|T], E) ->
@@ -15,3 +15,14 @@ reverse(Lst) ->
         end
     end,
     ReverseAcc(ReverseAcc, Lst, []).
+
+% concatenate([[1,2,3],[],[4,five]])
+concatenate([])    -> [];
+concatenate([H|T]) ->
+    Flat = fun (F, Lst) ->
+        case Lst of
+            [] -> concatenate(T);
+            [Hs|Ts] -> [Hs|F(F, Ts)]
+        end
+    end,
+    Flat(Flat, H).
