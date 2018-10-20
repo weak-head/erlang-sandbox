@@ -8,7 +8,31 @@ quick_sort([H|T]) ->
     Gt = quick_sort(filter(T, fun(E) -> H >  E end)),
     flatten([Le, [H], Gt]).
 
-merge_sort([]) -> [].
+merge_sort([]) -> [];
+merge_sort([A]) -> [A];
+merge_sort(Ls) ->
+    {Fst, Snd} = split(Ls),
+    merge(merge_sort(Fst), merge_sort(Snd)).
+
+split([])  -> {[], []};
+split([A]) -> {[A], []};
+split(Ls) ->
+    Ln = length(Ls),
+    split_at_acc(Ls, (Ln div 2), []).
+
+split_at_acc([], _, Acc)   -> {Acc, []};
+split_at_acc(Tail, 0, Acc) -> {Acc, Tail};
+split_at_acc([H|T], N, Acc) ->
+    split_at_acc(T, (N-1), [H|Acc]).
+
+merge([], [])   -> [];
+merge(As, [])   -> As;
+merge([], Bs)   -> Bs;
+merge([A|Ta], [B|Tb]) ->
+    case A > B of
+        true  -> [B|merge([A|Ta], Tb)];
+        false -> [A|merge(Ta, [B|Tb])]
+    end.
 
 % ---
 
