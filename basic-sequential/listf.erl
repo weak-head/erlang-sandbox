@@ -1,10 +1,22 @@
 -module(listf).
 -export([filter/2, reverse/1, concatenate/1, flatten/1]).
+-export([quick_sort/1, merge_sort/1]).
 
-filter([], _)    -> [];
-filter([H|T], E) ->
-    if H =< E -> [H|filter(T, E)];
-       true   -> filter(T, E)
+quick_sort([]) -> [];
+quick_sort([H|T]) ->
+    Le = quick_sort(filter(T, fun(E) -> H =< E end)),
+    Gt = quick_sort(filter(T, fun(E) -> H >  E end)),
+    flatten([Le, [H], Gt]).
+
+merge_sort([]) -> [].
+
+% ---
+
+filter([], _)            -> [];
+filter([H|T], Predicate) ->
+    case Predicate(H) of
+        true  -> [H|filter(T, Predicate)];
+        false -> filter(T, Predicate)
     end.
 
 reverse(Lst) ->
