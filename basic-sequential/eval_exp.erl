@@ -1,14 +1,6 @@
 -module(eval_exp).
 -export([next_token/1, tokenize/1]).
 
-% parse simple arithmetic expression
-% Expr:
-%   ((2+3)-4)
-% Into:
-%   {minus, {plus, {num, 2}, {num, 3}}, {num, 4}}
-parse([]) -> [].
-
-
 % tokenize simple arithmetic expression
 % Expr:
 %   (23+42)-4
@@ -22,7 +14,6 @@ tokenize(Lst) ->
         {{eof}, []}     -> [];
         {Token, Rest}   -> [Token|tokenize(Rest)]
     end.
-
 
 next_token([])    -> {{eof}, []};
 next_token([H|T]) ->
