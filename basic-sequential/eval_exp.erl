@@ -1,13 +1,40 @@
 -module(eval_exp).
--export([parse/1]).
--export([expressionToAST/2]).
+-export([eval/1, parse/1]).
+-export([evalAST/1, expressionToAST/2]).
 -export([next_token/1, tokenize/1]).
+
+
+% evaluate a string representation of a simple
+% arithmetic expression to it's value.
+%
+% Evaluates:
+%   "(2+3+4)-(11+77-(23+77+14))"
+%
+% To:
+%   35
+%
+eval(Expression) ->
+    AST = parse(Expression),
+    case AST of
+        {parsing_error, Expr, Rest} -> {parsing_error, Expr, Rest};
+        _ -> evalAST(AST)
+    end.
+
+
+% evaluates AST to the actual final value.
+evalAST({num, Number}) ->
+    Number;
+evalAST({plus, Lexp, Rexp}) ->
+    evalAST(Lexp) + evalAST(Rexp);
+evalAST({minus, Lexp, Rexp}) ->
+    evalAST(Lexp) - evalAST(Rexp).
+
 
 % parses a string representation of a simple
 % arithmetic expression and converts it into AST
 %
 % Converts:
-%  "(2+3+4)-(11+77-(23+77)+14)"
+%  "(2+3+4)-(11+77-(23+77+14))"
 %
 % Into:
 %  {minus,{plus,{num,2},{plus,{num,3},{num,4}}},
@@ -32,6 +59,8 @@ parse(Expression) ->
 % Into:
 %  {minus, {plus, {num, 23}, {num, 42}}, {num, 4}}
 %
+% TBD: this implementation doesn't respect the operator precendence for the nested parentheses
+% so it will build incorrect AST for some untrivial nested cases
 expressionToAST([], HeadExp)    ->
     {HeadExp, []};
 
