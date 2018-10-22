@@ -3,13 +3,19 @@
 -export([expressionToAST/2]).
 -export([next_token/1, tokenize/1]).
 
-% create AST from a simple arithmetic expression
-% Expr:
-%  (23+42)-4
+% parses a string representation of a simple
+% arithmetic expression and converts it into AST
+%
+% Converts:
+%  "(2+3+4)-(11+77-(23+77)+14)"
+%
 % Into:
-%  {minus, {plus, {num, 23}, {num, 42}}, {num, 4}}
-parse(Lst) ->
-    Tokens = tokenize(Lst),
+%  {minus,{plus,{num,2},{plus,{num,3},{num,4}}},
+%         {plus,{num,11},
+%               {minus,{num,77},{plus,{plus,{num,23},{num,77}},{num,14}}}}}
+%
+parse(Expression) ->
+    Tokens = tokenize(Expression),
     {Expr, Rest} = expressionToAST(Tokens, {}),
     case Rest of
         [] -> Expr;
@@ -17,44 +23,52 @@ parse(Lst) ->
     end.
 
 
-% converts a well-formated expression
-% represented as tokenized stream into AST
-% Expr:
+% converts a well-formated,
+% previously tokenized expression into AST
+%
+% Converts:
 %   [open_parenthesis, {num,23}, plus, {num,42}, close_parenthesis, minus, {num,4}]
+%
 % Into:
 %  {minus, {plus, {num, 23}, {num, 42}}, {num, 4}}
-expressionToAST([], HeadExp)    -> {HeadExp, []};
-expressionToAST([H|T], HeadExp) ->
-    case H of
-        open_parenthesis ->
-            {Expr, [close_parenthesis|Rest]} = expressionToAST(T, {}),
-            expressionToAST(Rest, Expr);
-        close_parenthesis ->
-            {HeadExp, [H|T]};
-        {num, Number} ->
-            case T of
-                [] ->
-                    {{num, Number}, []};
-                [Operation|TRest] ->
-                    case Operation of
-                        Op when Op =:= minus;
-                                Op =:= plus ->
-                            {NextExpr, Rest} = expressionToAST(TRest, {}),
-                            {{Op, {num, Number}, NextExpr}, Rest};
-                        _ -> {{num, Number}, T}
-                    end
-                end;
-        Op when Op =:= minus;
-                Op =:= plus ->
-            {NextExp, Rest} = expressionToAST(T, {}),
-            {{Op, HeadExp, NextExp}, Rest}
-    end.
+%
+expressionToAST([], HeadExp)    ->
+    {HeadExp, []};
+
+expressionToAST([open_parenthesis|T], _HeadExp) ->
+    {Expr, [close_parenthesis|Rest]} = expressionToAST(T, {}),
+    expressionToAST(Rest, Expr);
+
+expressionToAST([close_parenthesis|T], HeadExp) ->
+    {HeadExp, [close_parenthesis|T]};
+
+expressionToAST([{num, Number}|T], _HeadExp) ->
+    case T of
+        [] -> {{num, Number}, []};
+        [Operation|TRest] ->
+            case Operation of
+                Op when Op =:= minus;
+                        Op =:= plus ->
+                    {NextExpr, Rest} = expressionToAST(TRest, {}),
+                    {{Op, {num, Number}, NextExpr}, Rest};
+                _ -> {{num, Number}, T}
+            end
+    end;
+
+expressionToAST([Op|T], HeadExp) when Op =:= minus;
+                                      Op =:= plus ->
+    {NextExp, Rest} = expressionToAST(T, {}),
+    {{Op, HeadExp, NextExp}, Rest}.
+
 
 % tokenize simple arithmetic expression
+%
 % Expr:
 %   (23+42)-4
+%
 % Into:
 %   [open_parenthesis, {num,23}, plus, {num,42}, close_parenthesis, minus, {num,4}]
+%
 tokenize([])  -> [];
 tokenize(Lst) ->
     NextToken = next_token(Lst),
