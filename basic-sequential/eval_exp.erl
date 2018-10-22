@@ -1,6 +1,24 @@
 -module(eval_exp).
 -export([next_token/1, tokenize/1]).
 
+% create AST from a simple arithmetic expression
+% Expr:
+%  (23+42)-4
+% Into:
+%  {minus, {plus, {num, 23}, {num, 42}}, {num, 4}}
+parse(Lst) ->
+    Tokens = tokenize(Lst),
+    buildAST(Tokens).
+
+
+% convert tokenized stream into AST
+% Expr:
+%   [open_parenthesis, {num,23}, plus, {num,42}, close_parenthesis, minus, {num,4}]
+% Into:
+%  {minus, {plus, {num, 23}, {num, 42}}, {num, 4}}
+buildAST([]) -> [].
+
+
 % tokenize simple arithmetic expression
 % Expr:
 %   (23+42)-4
@@ -14,6 +32,7 @@ tokenize(Lst) ->
         {{eof}, []}     -> [];
         {Token, Rest}   -> [Token|tokenize(Rest)]
     end.
+
 
 next_token([])    -> {{eof}, []};
 next_token([H|T]) ->
@@ -32,5 +51,3 @@ next_token([H|T]) ->
                 {Int, Rest} -> {{num, Int}, Rest}
                end
     end.
-
-
