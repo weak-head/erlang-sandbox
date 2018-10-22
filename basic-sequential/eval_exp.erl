@@ -1,5 +1,7 @@
 -module(eval_exp).
--export([next_token/1, tokenize/1, extractNextExpr/1]).
+-export([parse/1]).
+-export([expressionToAST/2]).
+-export([next_token/1, tokenize/1]).
 
 % create AST from a simple arithmetic expression
 % Expr:
@@ -8,7 +10,11 @@
 %  {minus, {plus, {num, 23}, {num, 42}}, {num, 4}}
 parse(Lst) ->
     Tokens = tokenize(Lst),
-    expressionToAST(Tokens, {}).
+    {Expr, Rest} = expressionToAST(Tokens, {}),
+    case Rest of
+        [] -> Expr;
+        _  -> {parsing_error, Expr, Rest}
+    end.
 
 
 % converts a well-formated expression
@@ -17,21 +23,14 @@ parse(Lst) ->
 %   [open_parenthesis, {num,23}, plus, {num,42}, close_parenthesis, minus, {num,4}]
 % Into:
 %  {minus, {plus, {num, 23}, {num, 42}}, {num, 4}}
-expressionToAST([], Expr)     -> Expr;
-expressionToAST(Stream, Expr) ->
-    {NextExp, Rest}        = extractNextExpr(Stream),
-    {RestOfStream, NewExp} = combineExpr(Rest, NextExp, Expr),
-    expressionToAST(RestOfStream, NewExp).
-
-
-extractNextExpr([])  -> {{}, []};
-extractNextExpr([H|T]) ->
+expressionToAST([], HeadExp)    -> {HeadExp, []};
+expressionToAST([H|T], HeadExp) ->
     case H of
         open_parenthesis ->
-            {Expr, [close_parenthesis|Rest]} = extractNextExpr(T),
-            {Expr, Rest};
+            {Expr, [close_parenthesis|Rest]} = expressionToAST(T, {}),
+            expressionToAST(Rest, Expr);
         close_parenthesis ->
-            {error, unexpected_closed_parenthesis};
+            {HeadExp, [H|T]};
         {num, Number} ->
             case T of
                 [] ->
@@ -40,20 +39,16 @@ extractNextExpr([H|T]) ->
                     case Operation of
                         Op when Op =:= minus;
                                 Op =:= plus ->
-                            {NextExpr, Rest} = extractNextExpr(TRest),
+                            {NextExpr, Rest} = expressionToAST(TRest, {}),
                             {{Op, {num, Number}, NextExpr}, Rest};
                         _ -> {{num, Number}, T}
                     end
-                end
+                end;
+        Op when Op =:= minus;
+                Op =:= plus ->
+            {NextExp, Rest} = expressionToAST(T, {}),
+            {{Op, HeadExp, NextExp}, Rest}
     end.
-
-
-combineExpr([], NextExp, Expr) -> {[], Expr}.
-
-
-parseToCloseParenthesis([]) -> {error, unexpected_end_of_input};
-parseToCloseParenthesis(Stream) -> {done}.
-
 
 % tokenize simple arithmetic expression
 % Expr:
