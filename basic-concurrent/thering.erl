@@ -1,5 +1,8 @@
 -module(thering).
--export([start/1, start_proc/2, bench/1]).
+-export([start/1, start_proc/2, bench/1, bench/0]).
+
+bench() ->
+    {bench(100000), bench(1000000), bench(10000000)}.
 
 % bench(100000).
 % bench(1000000).
