@@ -1,6 +1,7 @@
 -module(echo).
 -export([go/0, loop/0]).
 -export([go_r/0, loop_r/0]).
+-export([start/0, stop/0, print/1, message_loop/0]).
 
 go() ->
     Pid = spawn(echo, loop, []),
@@ -40,3 +41,32 @@ loop_r() ->
             true
     end.
 
+% ----------------
+
+start() ->
+    register(echo, spawn(?MODULE, message_loop, [])), ok.
+
+message_loop() ->
+    receive
+        stop ->
+            ok;
+        {print, Msg} ->
+            io:format("~w~n", [Msg]),
+            message_loop()
+    end.
+
+print(Msg) ->
+    case whereis(echo) of
+        undefined ->
+            {error, server_not_running};
+        Pid when is_pid(Pid) ->
+            Pid ! {print, Msg}, ok
+    end.
+
+stop() ->
+    case whereis(echo) of
+        undefined ->
+            {error, server_not_running};
+        Pid when is_pid(Pid) ->
+            Pid ! stop, ok
+    end.
