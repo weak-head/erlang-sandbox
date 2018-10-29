@@ -1,6 +1,7 @@
 -module(thering).
 -export([start/1, start_proc/2, bench/1, bench/0]).
 -export([start_ring/3, make_ring/2, main_loop/1, ring_chain/1]).
+-export([start_ring2/3, make_ring2/2]).
 
 bench() ->
     {bench(100000), bench(1000000), bench(10000000)}.
@@ -58,3 +59,20 @@ ring_chain(Next) ->
         exit ->
             true
     end.
+
+% -------------------------------------
+% Same process ring, but different chain
+% creation scheme
+% -------------------------------------
+
+start_ring2(M, N, Message) ->
+    HeadPid = make_ring2(N, self()),
+    HeadPid ! {send_msg, M, Message},
+    main_loop(HeadPid),
+    HeadPid ! exit.
+
+make_ring2(0, TailPid) ->
+    spawn(thering, ring_chain, [TailPid]);
+make_ring2(N, TailPid) ->
+    NextPid = make_ring(N-1, TailPid),
+    spawn(thering, ring_chain, [NextPid]).
