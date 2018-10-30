@@ -13,4 +13,4 @@
 - [timer](basic-concurrent/simple_timer.erl)
 
 > Process design patterns
-- [client-server](process-desing-patterns/client_server.erl)
+- [client-server](process-design-patterns/client_server.erl)
