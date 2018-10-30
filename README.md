@@ -11,3 +11,6 @@
 > Concurrent
 - [process ring](basic-concurrent/thering.erl)
 - [timer](basic-concurrent/simple_timer.erl)
+
+> Process design patterns
+- [client-server](process-desing-patterns/client_server.erl)
