@@ -1,4 +1,5 @@
 -module(client_server).
+% -import(lists, [keydelete/3]).
 -export([start/0, stop/0, allocate/0, deallocate/1]).
 -export([init/0]).
 
@@ -41,7 +42,7 @@ allocate({[Freq|Free], Allocated}, Pid) ->
     {{Free, [{Freq, Pid}|Allocated]}, {ok, Freq}}.
 
 deallocate({Free, Allocated}, Freq) ->
-    NewAllocated=list:keydelete(Freq, 1, Allocated),
+    NewAllocated=lists:keydelete(Freq, 1, Allocated),
     {[Freq|Free], NewAllocated}.
 
 reply(Pid, Reply) ->
