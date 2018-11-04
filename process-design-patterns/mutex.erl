@@ -3,10 +3,44 @@
 -export([wait/0, signal/0]).
 -export([init/0]).
 
-% Finite state machine
+% Mutex FSM (finite state machine)
 
-start() -> ok.
-stop() -> ok.
-init() -> ok.
-wait() -> ok.
-signal() -> ok.
+wait() ->
+    mutex ! {wait, self()},
+    receive ok -> ok end.
+
+signal() ->
+    mutex ! {signal, self()}, ok.
+
+start() ->
+    register(mutex, spawn(?MODULE, init, [])).
+
+stop() ->
+    mutex ! terminate.
+
+init() ->
+    free().
+
+free() ->
+    receive
+        {wait, Pid} ->
+            Pid ! ok,
+            busy(Pid);
+        terminate ->
+            terminate()
+    end.
+
+busy(Pid) ->
+    receive
+        {signal, Pid} ->
+            free()
+    end.
+
+terminate() ->
+    receive
+        {wait, Pid} ->
+            exit(Pid, kill),
+            terminate()
+    after
+        0 -> ok
+    end.
