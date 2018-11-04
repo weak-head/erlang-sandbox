@@ -14,3 +14,4 @@
 
 > Process design patterns
 - [client-server](process-design-patterns/client_server.erl)
+- [finite state machine](process-design-patterns/mutex.erl)
