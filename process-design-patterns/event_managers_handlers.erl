@@ -1,0 +1,1 @@
+% TODO: Generic event manager
