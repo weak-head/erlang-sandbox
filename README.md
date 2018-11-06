@@ -15,3 +15,4 @@
 > Process design patterns
 - [client-server](process-design-patterns/client_server.erl)
 - [finite state machine](process-design-patterns/mutex.erl)
+- [event manager](process-design-patterns/event_manager.erl) ([two](process-design-patterns/io_handler.erl) [clients](process-design-patterns/log_handler.erl) and [test case](process-design-patterns/event_manager_test.erl))
