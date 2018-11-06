@@ -9,7 +9,7 @@ handle_event({raise_alarm, Id, Alarm}, Count) ->
     print(alarm, Id, Alarm, Count),
     Count+1;
 
-handle_event({clean_alarm, Id, Alarm}, Count) ->
+handle_event({clear_alarm, Id, Alarm}, Count) ->
     print(clear, Id, Alarm, Count),
     Count+1;
 
