@@ -47,10 +47,37 @@ reply(To, Msg) ->
 
 % --- Request handlers
 
-handle_request({write, Key, Element}, State) -> ok;
+handle_request({write, Key, Element}, State) ->
+    {ok, [{Key, Element}|State]};
 
-handle_request({delete, Key}, State) -> ok;
+handle_request({delete, Key}, State) ->
+    {ok, delete(Key, State)};
 
-handle_request({read, Key}, State) -> ok;
+handle_request({read, Key}, State) ->
+    {read(Key, State), State};
 
-handle_request({match, Element}, State) -> ok.
+handle_request({match, Element}, State) ->
+    {match(Element, State), State}.
+
+% --- Helpers
+
+delete(_, []) ->
+    [];
+delete(K, [{K,_}|Db]) ->
+    delete(K, Db);
+delete(Key, [{K,V}|Db]) ->
+    [{K,V}|delete(Key,Db)].
+
+read(_, []) ->
+    {error, instance};
+read(_K, [{_K,V}|_]) ->
+    {ok, V};
+read(Key, [{_K,_V}|Db]) ->
+    read(Key, Db).
+
+match(_, []) ->
+    [];
+match(E, [{K,E}|Db]) ->
+    [K|match(E,Db)];
+match(E, [{_K,_R}|Db]) ->
+    match(E, Db).
