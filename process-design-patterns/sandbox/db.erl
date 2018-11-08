@@ -47,4 +47,10 @@ reply(To, Msg) ->
 
 % --- Request handlers
 
-handle_request({write, Key, Element}, State) -> ok.
+handle_request({write, Key, Element}, State) -> ok;
+
+handle_request({delete, Key}, State) -> ok;
+
+handle_request({read, Key}, State) -> ok;
+
+handle_request({match, Element}, State) -> ok.
