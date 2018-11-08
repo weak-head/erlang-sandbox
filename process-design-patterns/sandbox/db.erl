@@ -1,5 +1,6 @@
 -module(db).
 -export([start/0, stop/0, write/2, delete/1, read/1, match/1]).
+-export([init/0]).
 
 % --- Public API
 
@@ -7,7 +8,8 @@ start() ->
     register(db, spawn(db, init, [])).
 
 stop() ->
-    call(stop).
+    db ! {stop, self()},
+    receive {reply, Reply} -> Reply end.
 
 write(Key, Element) ->
     call({write, Key, Element}).
