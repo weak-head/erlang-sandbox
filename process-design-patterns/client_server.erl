@@ -33,7 +33,13 @@ loop(Frequencies) ->
             reply(Pid, Reply),
             loop(NewFrequencies);
         {request, Pid, stop} ->
-            reply(Pid, ok)
+            case Frequencies of
+                {_, []} ->
+                    reply(Pid, ok);
+                _       ->
+                    reply(Pid, {error, active_connections}),
+                    loop(Frequencies)
+            end
     end.
 
 allocate({[], Allocated}, _Pid) ->
