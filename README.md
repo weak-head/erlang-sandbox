@@ -13,6 +13,8 @@
 - [timer](basic-concurrent/simple_timer.erl)
 
 > Process design patterns
-- [client-server](process-design-patterns/client_server.erl)
+- client-server
+  - [channel frequencies](process-design-patterns/client_server.erl)
+  - [list-based db](process-design-patterns/sandbox/db.erl)
 - [finite state machine](process-design-patterns/mutex.erl)
 - [event manager](process-design-patterns/event_manager.erl) ([two](process-design-patterns/io_handler.erl) [clients](process-design-patterns/log_handler.erl) and [test case](process-design-patterns/event_manager_test.erl))
