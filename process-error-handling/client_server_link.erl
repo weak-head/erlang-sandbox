@@ -33,7 +33,7 @@ loop(Frequencies) ->
             reply(Pid, Reply),
             loop(NewFrequencies);
         {'EXIT', Pid, _Reason} ->
-            NewFrequencies = clean_dead_client(Frequencies, Pid),
+            NewFrequencies = remove_dead_client(Frequencies, Pid),
             loop(NewFrequencies);
         {request, Pid, stop} ->
             case Frequencies of
@@ -61,7 +61,7 @@ deallocate({Free, Allocated}, Pid, Freq) ->
             {{error, no_match}, {Free, Allocated}}
     end.
 
-clean_dead_client({Free, Allocated}, Pid) ->
+remove_dead_client({Free, Allocated}, Pid) ->
     case lists:keyfind(Pid, 2, Allocated) of
         {Freq, Pid} ->
             NewAllocated = lists:keydelete(Freq, 1, Allocated),
