@@ -21,3 +21,6 @@
 - [event manager](process-design-patterns/event_manager.erl) ([two](process-design-patterns/io_handler.erl) [clients](process-design-patterns/log_handler.erl) and [test case](process-design-patterns/event_manager_test.erl))
 
 ### Process error handling
+
+- [trapping process exits](process-error-handling/traping-exits/traping_exit.erl)
+- [client-server with bidirectional link](process-error-handling/client_server_link.erl)
