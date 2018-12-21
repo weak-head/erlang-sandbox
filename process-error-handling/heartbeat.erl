@@ -2,6 +2,12 @@
 -export([start/0, stop/0, status/0]).
 -export([init/0, entry_point/0, main_loop/2]).
 
+% >>>
+%  c(heartbeat).
+%  heartbeat:start().
+%  exit(whereis(heartbeat_r), exit_sync).
+% >>>
+
 % -------------------------
 
 start() ->
