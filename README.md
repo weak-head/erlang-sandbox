@@ -24,3 +24,4 @@
 
 - [trapping process exits](process-error-handling/traping-exits/traping_exit.erl)
 - [client-server with bidirectional link](process-error-handling/client_server_link.erl)
+- [process supervisor](process-error-handling/supervisor.erl)
