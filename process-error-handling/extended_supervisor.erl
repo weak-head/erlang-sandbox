@@ -5,6 +5,15 @@
 % -export([main_loop/1]).
 % -export([respawn/2, respawn_or_drop/2, cleanup/1]).
 
+% >> >> >>
+
+% c(extended_supervisor).
+% c(add_two).
+% extended_supervisor:supervise(addtwo, [{add_two, start, [], permanent}]).
+% add_two:request(10).
+% add_two:request(abc).
+% add_two:request(12).
+
 supervise(Name, WorkerSpecs) ->
     case (whereis(Name)) of
         undefined ->
@@ -26,17 +35,17 @@ init(WorkerSpecs) ->
     process_flag(trap_exit, true),
     main_loop(spawn_workers(WorkerSpecs)).
 
-spawn_worker({{Module, Func, Args}, {_Pid, Failures, Type}}) ->
+spawn_worker({_Pid, {Module, Func, Args}, {Failures, Type}}) ->
     case (catch(apply(Module, Func, Args))) of
         {ok, Pid} ->
-            {{Module, Func, Args}, {Pid, 0, Type}};
+            {Pid, {Module, Func, Args}, {0, Type}};
         _ ->
-            {{Module, Func, Args}, {none, Failures + 1, Type}}
+            {none, {Module, Func, Args}, {Failures + 1, Type}}
     end.
 
 spawn_workers([]) -> [];
 spawn_workers([{Module, Func, Args, Type} | Rest]) ->
-    [spawn_worker({{Module, Func, Args}, {none, 0, Type}}) | spawn_workers(Rest)].
+    [spawn_worker({none, {Module, Func, Args}, {0, Type}}) | spawn_workers(Rest)].
 
 main_loop(WorkerDefSpecs) ->
     receive
@@ -55,10 +64,18 @@ main_loop(WorkerDefSpecs) ->
     end.
 
 respawn_or_drop(Pid, WorkerDefSpecs) ->
-    WorkerDefSpecs.
+    {value, {_OldPid, {M, F, A}, {Failures, Type}}} = lists:keysearch(Pid, 1, WorkerDefSpecs),
+    case Type of
+        permanent ->
+            [spawn_worker({_OldPid, {M, F, A}, {Failures, Type}}) | lists:keydelete(Pid, 1, WorkerDefSpecs)];
+        transient ->
+            lists:keydelete(Pid, 1, WorkerDefSpecs)
+    end.
 
 respawn(Pid, WorkerDefSpecs) ->
-    WorkerDefSpecs.
+    {value, WorkerSpec} = lists:keysearch(Pid, 1, WorkerDefSpecs),
+    [spawn_worker(WorkerSpec) | lists:keydelete(Pid, 1, WorkerDefSpecs)].
 
 cleanup(WorkerDefSpecs) ->
+    % here we can handle workers that are keep failing...
     WorkerDefSpecs.
