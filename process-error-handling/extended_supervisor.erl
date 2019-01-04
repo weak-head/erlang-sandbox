@@ -60,7 +60,8 @@ main_loop(WorkerDefSpecs) ->
 
     after
         3000 ->
-            main_loop(cleanup(WorkerDefSpecs))
+            io:format("Cleaning-up: ~w~n", [WorkerDefSpecs]),
+            main_loop(cleanup(respawn_failed(WorkerDefSpecs)))
     end.
 
 respawn_or_drop(Pid, WorkerDefSpecs) ->
@@ -75,6 +76,15 @@ respawn_or_drop(Pid, WorkerDefSpecs) ->
 respawn(Pid, WorkerDefSpecs) ->
     {value, WorkerSpec} = lists:keysearch(Pid, 1, WorkerDefSpecs),
     [spawn_worker(WorkerSpec) | lists:keydelete(Pid, 1, WorkerDefSpecs)].
+
+respawn_failed(WorkerDefSpecs) ->
+    % side effects inside map ^_^
+    lists:map(fun({Pid, Spec, Opts}) ->
+                  case Pid of
+                      none -> spawn_worker({Pid, Spec, Opts});
+                      _    -> {Pid, Spec, Opts}
+                  end
+              end, WorkerDefSpecs).
 
 cleanup(WorkerDefSpecs) ->
     % here we can handle workers that are keep failing...

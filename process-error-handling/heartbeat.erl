@@ -23,8 +23,8 @@ status() ->
 % -------------------------
 
 init() ->
-    RPID = spawn(heartbeat, entry_point, []),
-    LPID = spawn(heartbeat, entry_point, []),
+    RPID = spawn_link(heartbeat, entry_point, []),
+    LPID = spawn_link(heartbeat, entry_point, []),
     register(heartbeat_r, RPID),
     register(heartbeat_l, LPID),
     heartbeat_r ! {attach, LPID},
