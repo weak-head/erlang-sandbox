@@ -78,4 +78,4 @@ respawn(Pid, WorkerDefSpecs) ->
 
 cleanup(WorkerDefSpecs) ->
     % here we can handle workers that are keep failing...
-    WorkerDefSpecs.
+    lists:filter(fun({_, _, {Failures, _}}) -> Failures < 3 end, WorkerDefSpecs).
