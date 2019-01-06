@@ -1,5 +1,10 @@
 # erlang-sandbox
 
+### Records and Macros
+
+- [record](records-and-macros/records.erl)
+- [macros](records-and-macros/macros.erl)
+
 ### Sequential
 
 - [conditional evaluation](basic-sequential/conditional_evaluation.erl)
