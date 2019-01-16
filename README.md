@@ -31,3 +31,7 @@
 - [client-server with bidirectional link](process-error-handling/client_server_link.erl)
 - [process supervisor](process-error-handling/extended_supervisor.erl)
 - [mutex](process-error-handling/reliable_mutex.erl)
+
+### Distributed
+
+tbd
