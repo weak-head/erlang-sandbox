@@ -34,4 +34,4 @@
 
 ### Distributed
 
-tbd
+- [otp behaviors](/tbd)
