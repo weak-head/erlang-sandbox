@@ -32,6 +32,6 @@
 - [process supervisor](process-error-handling/extended_supervisor.erl)
 - [mutex](process-error-handling/reliable_mutex.erl)
 
-### Distributed
+### OTP behaviors
 
-- [otp behaviors](/tbd)
+- [generic server](otp-behaviors/generic-server)
