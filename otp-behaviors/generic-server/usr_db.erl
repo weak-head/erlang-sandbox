@@ -5,8 +5,10 @@
 -module(usr_db).
 -include("usr.hrl").
 -export([create_tables/1, close_tables/0]).
--export([add_usr/1, update_usr/1]).
+-export([add_usr/1, update_usr/1, delete_usr/2]).
 -export([lookup_id/1, lookup_msisdn/1]).
+-export([restore_database/0]).
+-export([delete_disabled/0]).
 
 create_tables(FileName) ->
     % named set that is based on a hashtable and stored in ram
@@ -30,6 +32,12 @@ update_usr(User) ->
     dets:insert(usrDisk, User),
     ok.
 
+delete_usr(PhoneNo, CustId) ->
+    ets:delete(usrRam, PhoneNo),
+    ets:delete(usrIndex, CustId),
+    dets:delete(usrDisk, PhoneNo),
+    ok.
+
 % gets user based on id
 lookup_id(CustId) ->
     case get_index(CustId) of
@@ -50,3 +58,27 @@ get_index(CustId) ->
         [{CustId, PhoneNo}] -> {ok, PhoneNo};
         []                  -> {error, instance}
     end.
+
+restore_database() ->
+    Insert = fun(#usr{msisdn=PhoneNo, id=Id} = User) ->
+                ets:insert(usrIndex, {Id, PhoneNo}),
+                ets:insert(usrRam, User),
+                continue
+             end,
+    dets:traverse(usrDisk, Insert).
+
+delete_disabled() ->
+    ets:safe_fixtable(usrRam, true),
+    catch delete_disabled_loop(ets:first(usrRam)),
+    ets:safe_fixtable(usrRam, false),
+    ok.
+
+delete_disabled_loop('$end_of_table') ->
+    ok;
+delete_disabled_loop(PhoneNo) ->
+    case ets:lookup(usrRam, PhoneNo) of
+        [#usr{status = disabled, id = CustId}] ->
+            delete_usr(PhoneNo, CustId);
+        _ -> ok
+    end,
+    delete_disabled_loop(ets:next(usrRam, PhoneNo)).
