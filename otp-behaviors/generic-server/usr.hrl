@@ -5,4 +5,4 @@
                status = enabled,    %atom(), enabled | disabled
                plan,                %atom(), prepay | postpay
                services = []        %[atom()], service flag list
-            });
+            }).
