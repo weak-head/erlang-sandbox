@@ -81,4 +81,16 @@ handle_call({set_service, CustId, Service, Flag}, _From, LoopData) ->
         {error, instance} ->
             {error, instance}
     end,
-    {reply, Reply, LoopData}.
+    {reply, Reply, LoopData};
+
+handle_call({set_status, CustId, Status}, _From, LoopData) ->
+    Reply = case usr_db:lookup_id(CustId) of
+        {ok, Usr} ->
+            usr_db:update_usr(Usr#usr{status = Status});
+        {error, instance} ->
+            {error, instance}
+    end,
+    {reply, Reply, LoopData};
+
+handle_call(delete_disabled, _From, LoopData) ->
+    {reply, usr_db:delete_disabled(), LoopData}.
