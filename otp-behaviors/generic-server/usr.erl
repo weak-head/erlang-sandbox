@@ -45,7 +45,40 @@ lookup_id(CustId) ->
 %% ------------------------------------------------------------------
 %% gen_server behavior API callbacks
 
-init(_) -> ok.
-terminate(_, _) -> ok.
-handle_call(_, _, _) -> ok.
-handle_cast(_, _) -> ok.
+init(FileName) ->
+    usr_db:create_tables(FileName),
+    usr_db:restore_database(),
+    {ok, null}.
+
+terminate(_Reason, _LoopData) ->
+    usr_db:close_tables().
+
+handle_cast(stop, LoopData) ->
+    {stop, normal, LoopData}.
+
+% handle add_usr
+handle_call({add_usr, PhoneNum, CustId, Plan}, _From, LoopData) ->
+    Reply = usr_db:add_usr(#usr{msisdn = PhoneNum,
+                                id = CustId,
+                                plan = Plan}),
+    {reply, Reply, LoopData};
+
+% handle delete_usr
+handle_call({delete_usr, CustId}, _From, LoopData) ->
+    Reply = usr_db:delete_usr(CustId),
+    {reply, Reply, LoopData};
+
+% handle set_service
+handle_call({set_service, CustId, Service, Flag}, _From, LoopData) ->
+    Reply = case usr_db:lookup_id(CustId) of
+        {ok, Usr} ->
+            Services = lists:delete(Service, Usr#usr.services),
+            NewServices = case Flag of
+                true  -> [Service | Services];
+                false -> Services
+            end,
+            usr_db:update_usr(Usr#usr{services = NewServices});
+        {error, instance} ->
+            {error, instance}
+    end,
+    {reply, Reply, LoopData}.
