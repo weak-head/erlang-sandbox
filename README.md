@@ -35,3 +35,4 @@
 ### OTP behaviors
 
 - [generic server](otp-behaviors/generic-server)
+- [supervisor](otp-behaviors/supervisor)
