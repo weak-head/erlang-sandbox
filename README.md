@@ -36,4 +36,4 @@
 
 - [generic server](otp-behaviors/generic-server)
 - [supervisor](otp-behaviors/supervisor)
-- [application](opt-behaviors/application)
+- [application](otp-behaviors/application)
