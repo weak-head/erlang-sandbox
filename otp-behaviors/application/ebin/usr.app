@@ -5,6 +5,6 @@
    {registered, [usr, usr_sup]},
    {application, [kernel, stdlib]},
    {env, [{dets_name, "usrDb"}]},
-   {mod, {usr_app, []}}
-  ]
-}
+   {mod, {usr_app,[]}}
+   ]
+}.

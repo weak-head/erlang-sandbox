@@ -7,7 +7,7 @@
 -export([init/1, terminate/2, handle_call/3, handle_cast/2]).
 -export([add_usr/3, delete_usr/1, set_service/3, set_status/2, delete_disabled/0, lookup_id/1]).
 
--include("usr.hrl").
+-include("../include/usr.hrl").
 
 %% ------------------------------------------------------------------
 %% Operation and Maintenance API

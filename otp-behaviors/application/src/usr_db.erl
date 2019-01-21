@@ -3,7 +3,7 @@
 % Dets -> Disk Erlang Term Storage
 
 -module(usr_db).
--include("usr.hrl").
+-include("../include/usr.hrl").
 -export([create_tables/1, close_tables/0]).
 -export([add_usr/1, update_usr/1, delete_usr/2]).
 -export([lookup_id/1, lookup_msisdn/1]).
