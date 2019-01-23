@@ -37,3 +37,5 @@
 - [generic server](otp-behaviors/generic-server)
 - [supervisor](otp-behaviors/supervisor)
 - [application](otp-behaviors/application)
+- todo: finite state machine (gen_fsm)
+- todo: event handlers (gen_event)
