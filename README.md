@@ -39,3 +39,6 @@
 - [application](otp-behaviors/application)
 - todo: finite state machine (gen_fsm)
 - todo: event handlers (gen_event)
+
+### Mnesia
+- todo: mnesia use cases
